@@ -30,13 +30,13 @@ jobs:
       - name: Build com Maven
         run: mvn clean package -DskipTests
 
-      - name: Listar pasta gerada
-        run: dir target\azure-functions
-        shell: cmd
+      - name: Login no Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy para Azure Functions
         uses: Azure/functions-action@v1
         with:
           app-name: tech-charger4-feedback
           package: target/azure-functions/tech-charger4-feedback
-          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
