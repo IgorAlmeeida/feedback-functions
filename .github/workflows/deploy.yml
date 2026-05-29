@@ -1,0 +1,38 @@
+name: Deploy Azure Functions
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Maven
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build com Maven
+        run: mvn clean package -DskipTests
+
+      - name: Deploy para Azure Functions
+        uses: Azure/functions-action@v1
+        with:
+          app-name: tech-charger4-feedback
+          package: target/azure-functions/feedback-functions
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}

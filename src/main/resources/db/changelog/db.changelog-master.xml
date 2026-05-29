@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="1-create-feedbacks-table" author="techchallenge" dbms="mssql">
+        <comment>Cria a tabela principal de feedbacks com constraint de nota e default de data</comment>
+        <sql>
+            CREATE TABLE feedbacks (
+                id        INT IDENTITY(1,1) PRIMARY KEY,
+                descricao NVARCHAR(MAX)  NOT NULL,
+                nota      INT            NOT NULL CHECK (nota BETWEEN 0 AND 10),
+                urgencia  VARCHAR(10)    NOT NULL,
+                criado_em DATETIME2      NOT NULL DEFAULT GETDATE()
+            )
+        </sql>
+        <rollback>
+            DROP TABLE feedbacks
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2-create-index-urgencia" author="techchallenge" dbms="mssql">
+        <comment>Índice para consultas por urgência (relatório semanal)</comment>
+        <sql>
+            CREATE INDEX idx_feedbacks_urgencia ON feedbacks (urgencia)
+        </sql>
+        <rollback>
+            DROP INDEX idx_feedbacks_urgencia ON feedbacks
+        </rollback>
+    </changeSet>
+
+    <changeSet id="3-create-index-criado-em" author="techchallenge" dbms="mssql">
+        <comment>Índice para consultas por intervalo de data (relatório semanal)</comment>
+        <sql>
+            CREATE INDEX idx_feedbacks_criado_em ON feedbacks (criado_em)
+        </sql>
+        <rollback>
+            DROP INDEX idx_feedbacks_criado_em ON feedbacks
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
