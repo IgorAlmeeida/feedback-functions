@@ -28,7 +28,7 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Build com Maven
-        run: mvn clean package azure-functions:package -DskipTests
+        run: mvn clean package -DskipTests
 
       - name: Listar pasta gerada
         run: dir target\azure-functions
