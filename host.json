@@ -4,10 +4,15 @@
     "id": "Microsoft.Azure.Functions.ExtensionBundle",
     "version": "[4.*, 5.0.0)"
   },
+  "extensions": {
+    "queues": {
+      "messageEncoding": "none"
+    }
+  },
   "logging": {
     "logLevel": {
       "default": "Information",
-      "com.techchallenge": "Debug"
+      "br.com.fiap": "Debug"
     }
   }
 }
