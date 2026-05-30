@@ -56,6 +56,10 @@ public class EmailService {
         String adminEmailsRaw = keyVaultService.getSecret("admin-emails");
         String[] destinatarios = adminEmailsRaw.split(",");
 
+        LOG.infof("Preparando envio | from='%s' | destinatarios=%d | apiKeyPrefix=%s",
+                fromEmail, destinatarios.length,
+                apiKey != null && apiKey.length() > 5 ? apiKey.substring(0, 5) : "INVALIDA");
+
         Email remetente = new Email(fromEmail, FROM_NAME);
         Content content = new Content("text/plain", corpo);
 
@@ -74,11 +78,14 @@ public class EmailService {
 
             Response response = sg.api(request);
 
-            if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
-                LOG.infof("E-mail enviado para '%s' | Status: %d", email, response.getStatusCode());
-            } else {
-                LOG.warnf("Resposta inesperada ao enviar e-mail para '%s' | Status: %d | Body: %s",
-                        email, response.getStatusCode(), response.getBody());
+            // loga SEMPRE como INFO (warn não aparece no Azure) e estoura se falhar
+            LOG.infof("SendGrid => destino='%s' | Status=%d | Body=[%s]",
+                    email, response.getStatusCode(), response.getBody());
+
+            if (response.getStatusCode() >= 300) {
+                throw new IOException("SendGrid recusou envio para " + email
+                        + " | Status=" + response.getStatusCode()
+                        + " | Body=" + response.getBody());
             }
         }
     }
