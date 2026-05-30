@@ -20,8 +20,7 @@ public class EmailService {
 
     private static final Logger LOG = Logger.getLogger(EmailService.class);
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-    private static final String FROM_EMAIL = "noreply@techchallenge.com";
-    private static final String FROM_NAME = "Tech Challenge - Sistema de Feedback";
+    private static final String FROM_NAME = "Sistema de Feedback - Notificação Urgente";
 
     @Inject
     KeyVaultService keyVaultService;
@@ -53,10 +52,11 @@ public class EmailService {
 
     private void enviar(String assunto, String corpo) throws IOException {
         String apiKey = keyVaultService.getSecret("sendgrid-api-key");
+        String fromEmail = keyVaultService.getSecret("sendgrid-from-email");
         String adminEmailsRaw = keyVaultService.getSecret("admin-emails");
         String[] destinatarios = adminEmailsRaw.split(",");
 
-        Email remetente = new Email(FROM_EMAIL, FROM_NAME);
+        Email remetente = new Email(fromEmail, FROM_NAME);
         Content content = new Content("text/plain", corpo);
 
         SendGrid sg = new SendGrid(apiKey);
