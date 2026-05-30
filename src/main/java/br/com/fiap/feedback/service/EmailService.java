@@ -1,18 +1,15 @@
 package br.com.fiap.feedback.service;
 
-import com.sendgrid.Method;
-import com.sendgrid.Request;
-import com.sendgrid.Response;
-import com.sendgrid.SendGrid;
-import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Content;
-import com.sendgrid.helpers.mail.objects.Email;
+import com.azure.communication.email.EmailClient;
+import com.azure.communication.email.EmailClientBuilder;
+import com.azure.communication.email.models.EmailMessage;
+import com.azure.communication.email.models.EmailSendResult;
+import com.azure.core.util.polling.SyncPoller;
 import br.com.fiap.feedback.entity.Feedback;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
-import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 @ApplicationScoped
@@ -20,17 +17,14 @@ public class EmailService {
 
     private static final Logger LOG = Logger.getLogger(EmailService.class);
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-    private static final String FROM_NAME = "Sistema de Feedback - Notificação Urgente";
 
     @Inject
     KeyVaultService keyVaultService;
 
     public void enviarEmailUrgente(Feedback feedback) {
         String corpo = construirCorpoEmailUrgente(feedback);
-        String assunto = "🚨 Feedback Urgente Recebido";
-
         try {
-            enviar(assunto, corpo);
+            enviar("Feedback Urgente Recebido", corpo);
             LOG.infof("E-mail urgente enviado com sucesso para feedback id=%d", feedback.id);
         } catch (Exception e) {
             LOG.errorf(e, "Falha ao enviar e-mail urgente para feedback id=%d", feedback.id);
@@ -39,10 +33,8 @@ public class EmailService {
     }
 
     public void enviarRelatorioSemanal(String relatorio) {
-        String assunto = "📊 Relatório Semanal de Feedbacks";
-
         try {
-            enviar(assunto, relatorio);
+            enviar("Relatorio Semanal de Feedbacks", relatorio);
             LOG.info("Relatório semanal enviado com sucesso");
         } catch (Exception e) {
             LOG.error("Falha ao enviar relatório semanal", e);
@@ -50,48 +42,37 @@ public class EmailService {
         }
     }
 
-    private void enviar(String assunto, String corpo) throws IOException {
-        String apiKey = keyVaultService.getSecret("sendgrid-api-key");
-        String fromEmail = keyVaultService.getSecret("sendgrid-from-email");
+    private void enviar(String assunto, String corpo) {
+        String connectionString = keyVaultService.getSecret("acs-connection-string");
+        String remetente = keyVaultService.getSecret("acs-sender-email");
         String adminEmailsRaw = keyVaultService.getSecret("admin-emails");
-        String[] destinatarios = adminEmailsRaw.split(",");
 
-        LOG.infof("Preparando envio | from='%s' | destinatarios=%d | apiKeyPrefix=%s",
-                fromEmail, destinatarios.length,
-                apiKey != null && apiKey.length() > 5 ? apiKey.substring(0, 5) : "INVALIDA");
+        LOG.infof("Preparando envio ACS | from='%s'", remetente);
 
-        Email remetente = new Email(fromEmail, FROM_NAME);
-        Content content = new Content("text/plain", corpo);
+        EmailClient client = new EmailClientBuilder()
+                .connectionString(connectionString)
+                .buildClient();
 
-        SendGrid sg = new SendGrid(apiKey);
-
-        for (String dest : destinatarios) {
+        for (String dest : adminEmailsRaw.split(",")) {
             String email = dest.trim();
             if (email.isBlank()) continue;
 
-            Mail mail = new Mail(remetente, assunto, new Email(email), content);
+            EmailMessage message = new EmailMessage()
+                    .setSenderAddress(remetente)
+                    .setToRecipients(email)
+                    .setSubject(assunto)
+                    .setBodyPlainText(corpo);
 
-            Request request = new Request();
-            request.setMethod(Method.POST);
-            request.setEndpoint("mail/send");
-            request.setBody(mail.build());
+            SyncPoller<EmailSendResult, EmailSendResult> poller = client.beginSend(message, null);
+            EmailSendResult result = poller.waitForCompletion().getValue();
 
-            Response response = sg.api(request);
-
-            // loga SEMPRE como INFO (warn não aparece no Azure) e estoura se falhar
-            LOG.infof("SendGrid => destino='%s' | Status=%d | Body=[%s]",
-                    email, response.getStatusCode(), response.getBody());
-
-            if (response.getStatusCode() >= 300) {
-                throw new IOException("SendGrid recusou envio para " + email
-                        + " | Status=" + response.getStatusCode()
-                        + " | Body=" + response.getBody());
-            }
+            LOG.infof("ACS => destino='%s' | Status=%s | Id=%s",
+                    email, result.getStatus(), result.getId());
         }
     }
 
     private String construirCorpoEmailUrgente(Feedback feedback) {
-        String dataFormatada = feedback.criadoEm != null
+        String data = feedback.criadoEm != null
                 ? feedback.criadoEm.format(FORMATTER)
                 : "Não informada";
 
@@ -102,7 +83,7 @@ public class EmailService {
                 + "ID:         " + feedback.id + "\n"
                 + "Nota:       " + feedback.nota + " / 10\n"
                 + "Urgência:   " + feedback.urgencia + "\n"
-                + "Data/Hora:  " + dataFormatada + "\n"
+                + "Data/Hora:  " + data + "\n"
                 + "========================================\n"
                 + "Descrição:\n"
                 + feedback.descricao + "\n"

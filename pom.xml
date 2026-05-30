@@ -21,7 +21,6 @@
         <azure-keyvault-secrets.version>4.7.0</azure-keyvault-secrets.version>
         <azure-identity.version>1.11.0</azure-identity.version>
         <azure-storage-queue.version>12.20.0</azure-storage-queue.version>
-        <sendgrid-java.version>4.10.1</sendgrid-java.version>
     </properties>
 
     <dependencyManagement>
@@ -103,11 +102,10 @@
             <version>${azure-storage-queue.version}</version>
         </dependency>
 
-        <!-- SendGrid -->
         <dependency>
-            <groupId>com.sendgrid</groupId>
-            <artifactId>sendgrid-java</artifactId>
-            <version>${sendgrid-java.version}</version>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-communication-email</artifactId>
+            <version>1.0.20</version>
         </dependency>
 
         <!-- Tests -->
