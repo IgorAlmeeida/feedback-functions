@@ -20,7 +20,7 @@ public class WeeklyReportFunction {
 
     @FunctionName("WeeklyReport")
     public void run(
-            @TimerTrigger(name = "timer", schedule = "0 0 8 * * 0")
+            @TimerTrigger(name = "timer", schedule = "%WEEKLY_REPORT_SCHEDULE%")
             String timerInfo,
             final ExecutionContext context) {
 
