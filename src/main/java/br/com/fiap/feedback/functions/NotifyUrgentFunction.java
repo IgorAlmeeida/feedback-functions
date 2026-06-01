@@ -8,21 +8,9 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.QueueTrigger;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.jboss.logging.Logger;
 
-/**
- * Azure Function disparada automaticamente quando uma mensagem chega
- * na fila 'feedback-urgente' do Azure Storage Queue.
- *
- * Fluxo: FeedbackService -> QueueService (publica) -> esta function (consome) -> EmailService (envia e-mail)
- *
- * A variável AzureWebJobsStorage é configurada automaticamente pelo Azure Functions
- * e aponta para a Storage Account 'sttechchargerfeedback'.
- */
 @ApplicationScoped
 public class NotifyUrgentFunction {
-
-    private static final Logger LOG = Logger.getLogger(NotifyUrgentFunction.class);
 
     @Inject
     EmailService emailService;
@@ -39,25 +27,11 @@ public class NotifyUrgentFunction {
             String message,
             final ExecutionContext context) {
 
-        context.getLogger().info("NotifyUrgentFunction acionada. Processando mensagem...");
-        LOG.infof("Mensagem recebida da fila: %s", message);
-
         try {
             Feedback feedback = objectMapper.readValue(message, Feedback.class);
-
-            LOG.infof("Feedback deserializado | id=%d | nota=%d | urgência=%s",
-                    feedback.id, feedback.nota, feedback.urgencia);
-
-            emailService.enviarEmailUrgente(feedback);
-
-            context.getLogger().info("E-mail urgente enviado com sucesso. id=" + feedback.id);
-            LOG.infof("Notificação urgente concluída com sucesso para feedback id=%d", feedback.id);
-
+            emailService.sendUrgentEmail(feedback);
         } catch (Exception e) {
-            LOG.errorf(e, "Erro ao processar mensagem urgente da fila: %s", message);
-            context.getLogger().severe("Falha ao processar mensagem: " + e.getMessage());
-            // Re-lança para que o Azure Functions registre a falha e aplique retry policy
-            throw new RuntimeException("Falha ao processar mensagem urgente", e);
+            throw new RuntimeException("Failed to process urgent queue message", e);
         }
     }
 }

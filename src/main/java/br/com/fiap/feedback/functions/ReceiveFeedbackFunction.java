@@ -14,14 +14,11 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.jboss.logging.Logger;
 
 import java.util.Optional;
 
 @ApplicationScoped
 public class ReceiveFeedbackFunction {
-
-    private static final Logger LOG = Logger.getLogger(ReceiveFeedbackFunction.class);
 
     @Inject
     FeedbackService feedbackService;
@@ -39,10 +36,7 @@ public class ReceiveFeedbackFunction {
             HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
 
-        context.getLogger().info("ReceiveFeedbackFunction acionada.");
-
         String body = request.getBody().orElse(null);
-        LOG.debugf("Recebendo avaliação | body length=%d", body != null ? body.length() : 0);
 
         try {
             if (body == null || body.isBlank()) {
@@ -56,14 +50,12 @@ public class ReceiveFeedbackFunction {
                 return badRequest(request, "Corpo da requisição inválido ou mal formatado");
             }
 
-            HttpResponseMessage validacao = validarRequest(request, feedbackRequest);
-            if (validacao != null) {
-                return validacao;
+            HttpResponseMessage validationError = validateRequest(request, feedbackRequest);
+            if (validationError != null) {
+                return validationError;
             }
 
-            Feedback feedback = feedbackService.salvar(feedbackRequest);
-            LOG.infof("Avaliação registrada com sucesso | id=%d | urgência=%s", feedback.id, feedback.urgencia);
-            context.getLogger().info("Feedback registrado. id=" + feedback.id);
+            Feedback feedback = feedbackService.save(feedbackRequest);
 
             return request.createResponseBuilder(HttpStatus.CREATED)
                     .header("Content-Type", "application/json")
@@ -71,8 +63,6 @@ public class ReceiveFeedbackFunction {
                     .build();
 
         } catch (Exception e) {
-            LOG.errorf(e, "Erro interno ao processar avaliação");
-            context.getLogger().severe("Erro interno: " + e.getMessage());
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR)
                     .header("Content-Type", "application/json")
                     .body(toJson(new ErrorResponse("Erro interno ao processar a avaliação. Tente novamente.")))
@@ -80,24 +70,23 @@ public class ReceiveFeedbackFunction {
         }
     }
 
-    private HttpResponseMessage validarRequest(HttpRequestMessage<Optional<String>> request, FeedbackRequest req) {
-        if (req.descricao == null || req.descricao.isBlank()) {
+    private HttpResponseMessage validateRequest(HttpRequestMessage<Optional<String>> request, FeedbackRequest req) {
+        if (req.description == null || req.description.isBlank()) {
             return badRequest(request, "O campo 'descricao' é obrigatório e não pode estar vazio");
         }
-        if (req.nota == null) {
+        if (req.score == null) {
             return badRequest(request, "O campo 'nota' é obrigatório");
         }
-        if (req.nota < 0 || req.nota > 10) {
+        if (req.score < 0 || req.score > 10) {
             return badRequest(request, "O campo 'nota' deve ser um valor inteiro entre 0 e 10");
         }
         return null;
     }
 
-    private HttpResponseMessage badRequest(HttpRequestMessage<Optional<String>> request, String mensagem) {
-        LOG.warnf("Requisição inválida: %s", mensagem);
+    private HttpResponseMessage badRequest(HttpRequestMessage<Optional<String>> request, String message) {
         return request.createResponseBuilder(HttpStatus.BAD_REQUEST)
                 .header("Content-Type", "application/json")
-                .body(toJson(new ErrorResponse(mensagem)))
+                .body(toJson(new ErrorResponse(message)))
                 .build();
     }
 

@@ -1,11 +1,11 @@
 package br.com.fiap.feedback.service;
 
 import br.com.fiap.feedback.dto.FeedbackRequest;
+import br.com.fiap.feedback.dto.WeeklyReportData;
 import br.com.fiap.feedback.entity.Feedback;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import org.jboss.logging.Logger;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,101 +16,74 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class FeedbackService {
 
-    private static final Logger LOG = Logger.getLogger(FeedbackService.class);
-
     @Inject
     QueueService queueService;
 
     @Transactional
-    public Feedback salvar(FeedbackRequest request) {
-        String urgencia = calcularUrgencia(request.nota);
+    public Feedback save(FeedbackRequest request) {
+        String urgency = calculateUrgency(request.score);
 
         Feedback feedback = new Feedback();
-        feedback.descricao = request.descricao;
-        feedback.nota = request.nota;
-        feedback.urgencia = urgencia;
+        feedback.description = request.description;
+        feedback.score = request.score;
+        feedback.urgency = urgency;
 
         feedback.persist();
 
-        LOG.infof("Feedback persistido | id=%d | nota=%d | urgência=%s",
-                feedback.id, feedback.nota, feedback.urgencia);
-
-        if ("ALTA".equals(urgencia)) {
-            queueService.publicarMensagemUrgente(feedback);
+        if ("ALTA".equals(urgency)) {
+            queueService.publishUrgentMessage(feedback);
         }
 
         return feedback;
     }
 
-    public String gerarRelatorioSemanal() {
-        LocalDateTime inicio = LocalDate.now().minusDays(7).atStartOfDay();
-        LocalDateTime fim = LocalDateTime.now();
+    public WeeklyReportData generateWeeklyReport() {
+        LocalDateTime start = LocalDate.now().minusDays(7).atStartOfDay();
+        LocalDateTime end = LocalDateTime.now();
 
         List<Feedback> feedbacks = Feedback
-                .find("criadoEm >= ?1 and criadoEm <= ?2", inicio, fim)
+                .find("createdAt >= ?1 and createdAt <= ?2", start, end)
                 .list();
 
-        LOG.infof("Gerando relatório semanal | período: %s a %s | total: %d",
-                inicio.toLocalDate(), fim.toLocalDate(), feedbacks.size());
+        WeeklyReportData data = new WeeklyReportData();
+        data.startDate = start.toLocalDate();
+        data.endDate = end.toLocalDate();
+        data.total = feedbacks.size();
 
         if (feedbacks.isEmpty()) {
-            return "Nenhum feedback recebido no período de " + inicio.toLocalDate()
-                    + " a " + fim.toLocalDate() + ".";
+            data.highUrgency = 0;
+            data.mediumUrgency = 0;
+            data.lowUrgency = 0;
+            data.dailyReports = List.of();
+            return data;
         }
 
-        Map<LocalDate, List<Feedback>> porDia = feedbacks.stream()
-                .collect(Collectors.groupingBy(f -> f.criadoEm.toLocalDate()));
+        Map<String, Long> byUrgency = feedbacks.stream()
+                .collect(Collectors.groupingBy(f -> f.urgency, Collectors.counting()));
 
-        Map<String, Long> porUrgencia = feedbacks.stream()
-                .collect(Collectors.groupingBy(f -> f.urgencia, Collectors.counting()));
+        data.averageScore = feedbacks.stream().mapToInt(f -> f.score).average().orElse(0.0);
+        data.highUrgency = byUrgency.getOrDefault("ALTA", 0L);
+        data.mediumUrgency = byUrgency.getOrDefault("MEDIA", 0L);
+        data.lowUrgency = byUrgency.getOrDefault("BAIXA", 0L);
 
-        double mediaNota = feedbacks.stream()
-                .mapToInt(f -> f.nota)
-                .average()
-                .orElse(0.0);
+        Map<LocalDate, List<Feedback>> byDay = feedbacks.stream()
+                .collect(Collectors.groupingBy(f -> f.createdAt.toLocalDate()));
 
-        long totalAlta  = porUrgencia.getOrDefault("ALTA",  0L);
-        long totalMedia = porUrgencia.getOrDefault("MEDIA", 0L);
-        long totalBaixa = porUrgencia.getOrDefault("BAIXA", 0L);
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("========================================\n");
-        sb.append("     RELATÓRIO SEMANAL DE FEEDBACKS     \n");
-        sb.append("========================================\n");
-        sb.append(String.format("Período:            %s a %s%n", inicio.toLocalDate(), fim.toLocalDate()));
-        sb.append(String.format("Total de feedbacks: %d%n", feedbacks.size()));
-        sb.append(String.format("Média das notas:    %.2f / 10%n%n", mediaNota));
-
-        sb.append("--- Distribuição por Urgência ---\n");
-        sb.append(String.format("  ALTA:   %d%n", totalAlta));
-        sb.append(String.format("  MÉDIA:  %d%n", totalMedia));
-        sb.append(String.format("  BAIXA:  %d%n%n", totalBaixa));
-
-        sb.append("--- Feedbacks por Dia ---\n");
-        porDia.entrySet().stream()
+        data.dailyReports = byDay.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
-                .forEach(entry -> {
-                    double mediaDia = entry.getValue().stream()
-                            .mapToInt(f -> f.nota)
-                            .average()
-                            .orElse(0.0);
-                    long altasDia = entry.getValue().stream()
-                            .filter(f -> "ALTA".equals(f.urgencia))
-                            .count();
-                    sb.append(String.format("  %s: %d feedbacks | média: %.2f | urgentes: %d%n",
-                            entry.getKey(),
-                            entry.getValue().size(),
-                            mediaDia,
-                            altasDia));
-                });
+                .map(entry -> {
+                    double dayAverage = entry.getValue().stream().mapToInt(f -> f.score).average().orElse(0.0);
+                    long urgentCount = entry.getValue().stream().filter(f -> "ALTA".equals(f.urgency)).count();
+                    return new WeeklyReportData.DayReport(entry.getKey(), entry.getValue().size(), dayAverage, urgentCount);
+                })
+                .collect(Collectors.toList());
 
-        sb.append("========================================\n");
-        return sb.toString();
+        return data;
     }
 
-    private String calcularUrgencia(int nota) {
-        if (nota <= 3) return "ALTA";
-        if (nota <= 6) return "MEDIA";
+    private String calculateUrgency(int score) {
+        if (score <= 3) return "ALTA";
+        if (score <= 6) return "MEDIA";
         return "BAIXA";
     }
 }

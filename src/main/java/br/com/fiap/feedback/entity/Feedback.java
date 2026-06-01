@@ -14,22 +14,22 @@ public class Feedback extends PanacheEntityBase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
 
-    @Column(nullable = false, columnDefinition = "NVARCHAR(MAX)")
-    public String descricao;
+    @Column(name = "descricao", nullable = false, columnDefinition = "NVARCHAR(MAX)")
+    public String description;
 
-    @Column(nullable = false)
-    public Integer nota;
+    @Column(name = "nota", nullable = false)
+    public Integer score;
 
-    @Column(nullable = false, length = 10)
-    public String urgencia;
+    @Column(name = "urgencia", nullable = false, length = 10)
+    public String urgency;
 
     @Column(name = "criado_em", nullable = false)
-    public LocalDateTime criadoEm;
+    public LocalDateTime createdAt;
 
     @PrePersist
     public void prePersist() {
-        if (criadoEm == null) {
-            criadoEm = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
         }
     }
 }

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Feedback Urgente Recebido</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+        .header { background-color: #c62828; color: #ffffff; padding: 24px 32px; }
+        .header h1 { margin: 0; font-size: 20px; font-weight: bold; }
+        .content { padding: 32px; color: #333333; }
+        .badge { display: inline-block; background-color: #c62828; color: #fff; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .detail-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .detail-table td { padding: 10px 14px; border-bottom: 1px solid #eeeeee; font-size: 14px; }
+        .detail-table td:first-child { font-weight: bold; color: #666666; width: 120px; }
+        .description-box { background: #fafafa; border-left: 4px solid #c62828; padding: 14px 16px; margin: 16px 0; border-radius: 0 4px 4px 0; font-size: 14px; line-height: 1.6; }
+        .action-note { font-size: 13px; color: #555555; margin-top: 24px; }
+        .footer { background: #f5f5f5; padding: 14px 32px; font-size: 11px; color: #999999; text-align: center; border-top: 1px solid #e0e0e0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>&#9888; Feedback Urgente Recebido</h1>
+    </div>
+    <div class="content">
+        <p>
+            Um feedback com urgência <span class="badge" th:text="${feedback.urgency}">ALTA</span>
+            foi recebido e requer atenção imediata.
+        </p>
+
+        <table class="detail-table">
+            <tr>
+                <td>ID</td>
+                <td th:text="${feedback.id}">—</td>
+            </tr>
+            <tr>
+                <td>Nota</td>
+                <td><span th:text="${feedback.score}">—</span> / 10</td>
+            </tr>
+            <tr>
+                <td>Urgência</td>
+                <td th:text="${feedback.urgency}">—</td>
+            </tr>
+            <tr>
+                <td>Data/Hora</td>
+                <td th:text="${formattedDate}">—</td>
+            </tr>
+        </table>
+
+        <p><strong>Descrição:</strong></p>
+        <div class="description-box" th:text="${feedback.description}"></div>
+
+        <p class="action-note">Por favor, tome as ações necessárias o mais breve possível.</p>
+    </div>
+    <div class="footer">Sistema de Feedback &mdash; Notificação Automática</div>
+</div>
+</body>
+</html>

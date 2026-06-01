@@ -6,14 +6,11 @@ import com.azure.security.keyvault.secrets.SecretClientBuilder;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.jboss.logging.Logger;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
 public class KeyVaultService {
-
-    private static final Logger LOG = Logger.getLogger(KeyVaultService.class);
 
     @ConfigProperty(name = "azure.keyvault.url")
     String keyVaultUrl;
@@ -27,29 +24,23 @@ public class KeyVaultService {
                 .vaultUrl(keyVaultUrl)
                 .credential(new ManagedIdentityCredentialBuilder().build())
                 .buildClient();
-        LOG.infof("KeyVaultService inicializado. Vault: %s", keyVaultUrl);
     }
 
     public String getSecret(String name) {
         return cache.computeIfAbsent(name, key -> {
             try {
-                String value = secretClient.getSecret(key).getValue();
-                LOG.infof("Secret '%s' carregado do Key Vault", key);
-                return value;
+                return secretClient.getSecret(key).getValue();
             } catch (Exception e) {
-                LOG.errorf(e, "Falha ao buscar secret '%s' do Key Vault", key);
-                throw new RuntimeException("Falha ao buscar secret: " + key, e);
+                throw new RuntimeException("Failed to retrieve secret: " + key, e);
             }
         });
     }
 
-    public void invalidarCache(String name) {
+    public void invalidateCache(String name) {
         cache.remove(name);
-        LOG.infof("Cache do secret '%s' invalidado", name);
     }
 
-    public void invalidarTodoCache() {
+    public void invalidateAllCache() {
         cache.clear();
-        LOG.info("Todo o cache de secrets foi invalidado");
     }
 }

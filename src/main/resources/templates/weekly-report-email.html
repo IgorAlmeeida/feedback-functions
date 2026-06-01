@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Relatório Semanal de Feedbacks</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
+        .container { max-width: 680px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+        .header { background-color: #1565c0; color: #ffffff; padding: 24px 32px; }
+        .header h1 { margin: 0 0 6px; font-size: 20px; }
+        .header p { margin: 0; font-size: 13px; opacity: 0.85; }
+        .content { padding: 32px; }
+        .section-title { font-size: 15px; font-weight: bold; color: #333333; border-bottom: 2px solid #e0e0e0; padding-bottom: 8px; margin: 28px 0 16px; }
+        /* Summary cards */
+        .cards { display: table; width: 100%; border-spacing: 12px; margin: 4px -12px 0; }
+        .card { display: table-cell; background: #e3f2fd; border-radius: 8px; padding: 16px; text-align: center; width: 33%; }
+        .card .value { font-size: 28px; font-weight: bold; color: #1565c0; }
+        .card .label { font-size: 11px; color: #555555; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        /* Urgency bars */
+        .urgency-row { display: table; width: 100%; margin: 8px 0; }
+        .urgency-label { display: table-cell; width: 70px; font-size: 13px; font-weight: bold; vertical-align: middle; }
+        .urgency-bar-wrap { display: table-cell; vertical-align: middle; }
+        .urgency-bar-bg { background: #e0e0e0; border-radius: 4px; height: 16px; width: 100%; }
+        .urgency-bar-fill { height: 16px; border-radius: 4px; min-width: 2px; }
+        .bar-alta  { background-color: #c62828; }
+        .bar-media { background-color: #ef6c00; }
+        .bar-baixa { background-color: #2e7d32; }
+        .urgency-count { display: table-cell; width: 36px; text-align: right; font-size: 13px; color: #333333; vertical-align: middle; padding-left: 8px; }
+        /* Daily table */
+        .daily-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .daily-table th { background: #1565c0; color: #ffffff; padding: 9px 12px; text-align: left; font-weight: normal; }
+        .daily-table td { padding: 8px 12px; border-bottom: 1px solid #eeeeee; }
+        .daily-table tr:last-child td { border-bottom: none; }
+        .daily-table tr:nth-child(even) td { background: #f9f9f9; }
+        /* Empty state */
+        .no-data { text-align: center; padding: 40px 32px; color: #888888; font-size: 14px; }
+        .footer { background: #f5f5f5; padding: 14px 32px; font-size: 11px; color: #999999; text-align: center; border-top: 1px solid #e0e0e0; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="header">
+        <h1>&#128202; Relatório Semanal de Feedbacks</h1>
+        <p>Período: <span th:text="${report.startDate}">—</span> a <span th:text="${report.endDate}">—</span></p>
+    </div>
+
+    <!-- Dados disponíveis -->
+    <div class="content" th:if="${report.total > 0}">
+
+        <!-- Cards de resumo -->
+        <div class="section-title">Resumo do Período</div>
+        <div class="cards">
+            <div class="card">
+                <div class="value" th:text="${report.total}">0</div>
+                <div class="label">Total de Feedbacks</div>
+            </div>
+            <div class="card">
+                <div class="value" th:text="${#numbers.formatDecimal(report.averageScore, 1, 'COMMA', 2, 'POINT')}">0,00</div>
+                <div class="label">Média das Notas</div>
+            </div>
+            <div class="card">
+                <div class="value" th:text="${report.highUrgency}">0</div>
+                <div class="label">Urgência Alta</div>
+            </div>
+        </div>
+
+        <!-- Distribuição por urgência -->
+        <div class="section-title">Distribuição por Urgência</div>
+
+        <div class="urgency-row">
+            <span class="urgency-label">ALTA</span>
+            <span class="urgency-bar-wrap">
+                <div class="urgency-bar-bg">
+                    <div class="urgency-bar-fill bar-alta"
+                         th:style="'width:' + ${report.total > 0 ? (report.highUrgency * 100 / report.total) : 0} + '%'"></div>
+                </div>
+            </span>
+            <span class="urgency-count" th:text="${report.highUrgency}">0</span>
+        </div>
+        <div class="urgency-row">
+            <span class="urgency-label">MÉDIA</span>
+            <span class="urgency-bar-wrap">
+                <div class="urgency-bar-bg">
+                    <div class="urgency-bar-fill bar-media"
+                         th:style="'width:' + ${report.total > 0 ? (report.mediumUrgency * 100 / report.total) : 0} + '%'"></div>
+                </div>
+            </span>
+            <span class="urgency-count" th:text="${report.mediumUrgency}">0</span>
+        </div>
+        <div class="urgency-row">
+            <span class="urgency-label">BAIXA</span>
+            <span class="urgency-bar-wrap">
+                <div class="urgency-bar-bg">
+                    <div class="urgency-bar-fill bar-baixa"
+                         th:style="'width:' + ${report.total > 0 ? (report.lowUrgency * 100 / report.total) : 0} + '%'"></div>
+                </div>
+            </span>
+            <span class="urgency-count" th:text="${report.lowUrgency}">0</span>
+        </div>
+
+        <!-- Feedbacks por dia -->
+        <div class="section-title">Feedbacks por Dia</div>
+        <table class="daily-table">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Feedbacks</th>
+                    <th>Média da Nota</th>
+                    <th>Urgentes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="day : ${report.dailyReports}">
+                    <td th:text="${day.date}">—</td>
+                    <td th:text="${day.count}">—</td>
+                    <td th:text="${#numbers.formatDecimal(day.averageScore, 1, 'COMMA', 2, 'POINT')}">—</td>
+                    <td th:text="${day.urgentCount}">—</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <!-- Sem dados -->
+    <div class="no-data" th:unless="${report.total > 0}">
+        <p>
+            Nenhum feedback recebido no período de
+            <strong th:text="${report.startDate}">—</strong> a
+            <strong th:text="${report.endDate}">—</strong>.
+        </p>
+    </div>
+
+    <div class="footer">Sistema de Feedback &mdash; Relatório Automático Semanal</div>
+</div>
+</body>
+</html>

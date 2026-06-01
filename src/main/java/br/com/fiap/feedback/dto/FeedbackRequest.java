@@ -1,7 +1,12 @@
 package br.com.fiap.feedback.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class FeedbackRequest {
 
-    public String descricao;
-    public Integer nota;
+    @JsonProperty("descricao")
+    public String description;
+
+    @JsonProperty("nota")
+    public Integer score;
 }
