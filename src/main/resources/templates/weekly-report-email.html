@@ -42,7 +42,7 @@
 
     <div class="header">
         <h1>&#128202; Relatório Semanal de Feedbacks</h1>
-        <p>Período: <span th:text="${report.startDate}">—</span> a <span th:text="${report.endDate}">—</span></p>
+        <p>Período: <span th:text="${#temporals.format(report.startDate, 'dd/MM/yyyy')}">—</span> a <span th:text="${#temporals.format(report.endDate, 'dd/MM/yyyy')}">—</span></p>
     </div>
 
     <!-- Dados disponíveis -->
@@ -112,7 +112,7 @@
             </thead>
             <tbody>
                 <tr th:each="day : ${report.dailyReports}">
-                    <td th:text="${day.date}">—</td>
+                    <td th:text="${#temporals.format(day.date, 'dd/MM/yyyy')}">—</td>
                     <td th:text="${day.count}">—</td>
                     <td th:text="${#numbers.formatDecimal(day.averageScore, 1, 'COMMA', 2, 'POINT')}">—</td>
                     <td th:text="${day.urgentCount}">—</td>
@@ -126,8 +126,8 @@
     <div class="no-data" th:unless="${report.total > 0}">
         <p>
             Nenhum feedback recebido no período de
-            <strong th:text="${report.startDate}">—</strong> a
-            <strong th:text="${report.endDate}">—</strong>.
+            <strong th:text="${#temporals.format(report.startDate, 'dd/MM/yyyy')}">—</strong> a
+            <strong th:text="${#temporals.format(report.endDate, 'dd/MM/yyyy')}">—</strong>.
         </p>
     </div>
 

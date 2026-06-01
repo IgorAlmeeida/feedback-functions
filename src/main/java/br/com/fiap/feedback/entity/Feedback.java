@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+
+import static br.com.fiap.feedback.ApplicationConfig.BRAZIL_ZONE;
 
 @Entity
 @Table(name = "feedbacks")
@@ -29,7 +32,7 @@ public class Feedback extends PanacheEntityBase {
     @PrePersist
     public void prePersist() {
         if (createdAt == null) {
-            createdAt = LocalDateTime.now();
+            createdAt = LocalDateTime.now(ZoneId.of(BRAZIL_ZONE));
         }
     }
 }

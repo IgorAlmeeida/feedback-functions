@@ -9,7 +9,10 @@ import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
+
+import static br.com.fiap.feedback.ApplicationConfig.BRAZIL_ZONE;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -38,8 +41,9 @@ public class FeedbackService {
     }
 
     public WeeklyReportData generateWeeklyReport() {
-        LocalDateTime start = LocalDate.now().minusDays(7).atStartOfDay();
-        LocalDateTime end = LocalDateTime.now();
+        ZoneId zone = ZoneId.of(BRAZIL_ZONE);
+        LocalDateTime start = LocalDate.now(zone).minusDays(7).atStartOfDay();
+        LocalDateTime end = LocalDateTime.now(zone);
 
         List<Feedback> feedbacks = Feedback
                 .find("createdAt >= ?1 and createdAt <= ?2", start, end)
