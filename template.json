@@ -1,0 +1,2024 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vulnerabilityAssessments_Default_storageContainerPath": {
+            "type": "SecureString"
+        },
+        "sites_tech_charger4_feedback_name": {
+            "defaultValue": "tech-charger4-feedback",
+            "type": "String"
+        },
+        "serverfarms_ASP_techcharger4_a918_name": {
+            "defaultValue": "ASP-techcharger4-a918",
+            "type": "String"
+        },
+        "servers_tech_charger_feedback_2026_name": {
+            "defaultValue": "tech-charger-feedback-2026",
+            "type": "String"
+        },
+        "emailServices_ecs_feedback_name": {
+            "defaultValue": "ecs-feedback",
+            "type": "String"
+        },
+        "vaults_kvTechCharger4Feedback26_name": {
+            "defaultValue": "kvTechCharger4Feedback26",
+            "type": "String"
+        },
+        "components_tech_charger4_feedback_name": {
+            "defaultValue": "tech-charger4-feedback",
+            "type": "String"
+        },
+        "storageAccounts_sttechchargerfeedback_name": {
+            "defaultValue": "sttechchargerfeedback",
+            "type": "String"
+        },
+        "CommunicationServices_acs_feedback_name": {
+            "defaultValue": "acs-feedback",
+            "type": "String"
+        },
+        "actionGroups_Application_Insights_Smart_Detection_name": {
+            "defaultValue": "Application Insights Smart Detection",
+            "type": "String"
+        },
+        "workspaces_DefaultWorkspace_855e3dd2_d3ec_488a_88dc_ed5242aac38e_WUS2_externalid": {
+            "defaultValue": "/subscriptions/855e3dd2-d3ec-488a-88dc-ed5242aac38e/resourceGroups/DefaultResourceGroup-WUS2/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-855e3dd2-d3ec-488a-88dc-ed5242aac38e-WUS2",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Communication/emailServices",
+            "apiVersion": "2026-03-18",
+            "name": "[parameters('emailServices_ecs_feedback_name')]",
+            "location": "global",
+            "properties": {
+                "dataLocation": "Brazil"
+            }
+        },
+        {
+            "type": "microsoft.insights/actionGroups",
+            "apiVersion": "2024-10-01-preview",
+            "name": "[parameters('actionGroups_Application_Insights_Smart_Detection_name')]",
+            "location": "Global",
+            "properties": {
+                "groupShortName": "SmartDetect",
+                "enabled": true,
+                "emailReceivers": [],
+                "smsReceivers": [],
+                "webhookReceivers": [],
+                "eventHubReceivers": [],
+                "itsmReceivers": [],
+                "azureAppPushReceivers": [],
+                "automationRunbookReceivers": [],
+                "voiceReceivers": [],
+                "logicAppReceivers": [],
+                "azureFunctionReceivers": [],
+                "armRoleReceivers": [
+                    {
+                        "name": "Monitoring Contributor",
+                        "roleId": "749f88d5-cbae-40b8-bcfc-e573ddc772fa",
+                        "useCommonAlertSchema": true
+                    },
+                    {
+                        "name": "Monitoring Reader",
+                        "roleId": "43d0d8ad-25c7-4714-9337-8ba259a9fe05",
+                        "useCommonAlertSchema": true
+                    }
+                ]
+            }
+        },
+        {
+            "type": "microsoft.insights/components",
+            "apiVersion": "2020-02-02",
+            "name": "[parameters('components_tech_charger4_feedback_name')]",
+            "location": "westus2",
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web",
+                "Flow_Type": "Redfield",
+                "Request_Source": "IbizaWebAppExtensionCreate",
+                "RetentionInDays": 90,
+                "WorkspaceResourceId": "[parameters('workspaces_DefaultWorkspace_855e3dd2_d3ec_488a_88dc_ed5242aac38e_WUS2_externalid')]",
+                "IngestionMode": "LogAnalytics",
+                "publicNetworkAccessForIngestion": "Enabled",
+                "publicNetworkAccessForQuery": "Enabled",
+                "DisableLocalAuth": false
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2026-03-01-preview",
+            "name": "[parameters('vaults_kvTechCharger4Feedback26_name')]",
+            "location": "westus2",
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "Standard"
+                },
+                "tenantId": "77583a74-2ab0-4f4b-854f-54c9425c426c",
+                "networkAcls": {
+                    "bypass": "None",
+                    "defaultAction": "Allow",
+                    "ipRules": [],
+                    "virtualNetworkRules": []
+                },
+                "accessPolicies": [
+                    {
+                        "tenantId": "77583a74-2ab0-4f4b-854f-54c9425c426c",
+                        "objectId": "811a6bd7-e85a-4b2e-b256-de5c339ef00c",
+                        "permissions": {
+                            "keys": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore",
+                                "GetRotationPolicy",
+                                "SetRotationPolicy",
+                                "Rotate",
+                                "Encrypt",
+                                "Decrypt",
+                                "UnwrapKey",
+                                "WrapKey",
+                                "Verify",
+                                "Sign",
+                                "Purge",
+                                "Release"
+                            ],
+                            "secrets": [
+                                "Get",
+                                "List",
+                                "Set",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore",
+                                "Purge"
+                            ],
+                            "certificates": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore",
+                                "ManageContacts",
+                                "ManageIssuers",
+                                "GetIssuers",
+                                "ListIssuers",
+                                "SetIssuers",
+                                "DeleteIssuers",
+                                "Purge"
+                            ]
+                        }
+                    },
+                    {
+                        "tenantId": "77583a74-2ab0-4f4b-854f-54c9425c426c",
+                        "objectId": "9da1c269-ca67-416f-96c3-10540a6a4fff",
+                        "permissions": {
+                            "certificates": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore",
+                                "ManageContacts",
+                                "ManageIssuers",
+                                "GetIssuers",
+                                "ListIssuers",
+                                "SetIssuers",
+                                "DeleteIssuers",
+                                "Purge"
+                            ],
+                            "keys": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore",
+                                "GetRotationPolicy",
+                                "SetRotationPolicy",
+                                "Rotate",
+                                "Encrypt",
+                                "Decrypt",
+                                "UnwrapKey",
+                                "WrapKey",
+                                "Verify",
+                                "Sign",
+                                "Purge",
+                                "Release"
+                            ],
+                            "secrets": [
+                                "Get",
+                                "List",
+                                "Set",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore",
+                                "Purge"
+                            ]
+                        }
+                    }
+                ],
+                "enabledForDeployment": false,
+                "enabledForDiskEncryption": false,
+                "enabledForTemplateDeployment": false,
+                "enableSoftDelete": true,
+                "softDeleteRetentionInDays": 90,
+                "enableRbacAuthorization": false,
+                "vaultUri": "https://kvtechcharger4feedback26.vault.azure.net/",
+                "provisioningState": "Succeeded",
+                "publicNetworkAccess": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[parameters('servers_tech_charger_feedback_2026_name')]",
+            "location": "westus2",
+            "kind": "v12.0",
+            "properties": {
+                "administratorLogin": "superadmin",
+                "version": "12.0",
+                "minimalTlsVersion": "1.2",
+                "publicNetworkAccess": "Enabled",
+                "restrictOutboundNetworkAccess": "Disabled",
+                "retentionDays": -1
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2026-04-01",
+            "name": "[parameters('storageAccounts_sttechchargerfeedback_name')]",
+            "location": "westus2",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "dualStackEndpointPreference": {
+                    "publishIpv6Endpoint": false
+                },
+                "dnsEndpointType": "Standard",
+                "defaultToOAuthAuthentication": false,
+                "publicNetworkAccess": "Enabled",
+                "allowCrossTenantReplication": false,
+                "minimumTlsVersion": "TLS1_2",
+                "allowBlobPublicAccess": false,
+                "allowSharedKeyAccess": true,
+                "networkAcls": {
+                    "ipv6Rules": [],
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "requireInfrastructureEncryption": false,
+                    "services": {
+                        "file": {
+                            "keyType": "Account",
+                            "enabled": true
+                        },
+                        "blob": {
+                            "keyType": "Account",
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2024-11-01",
+            "name": "[parameters('serverfarms_ASP_techcharger4_a918_name')]",
+            "location": "West US 2",
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic",
+                "size": "Y1",
+                "family": "Y",
+                "capacity": 0
+            },
+            "kind": "functionapp",
+            "properties": {
+                "perSiteScaling": false,
+                "elasticScaleEnabled": false,
+                "maximumElasticWorkerCount": 1,
+                "isSpot": false,
+                "reserved": false,
+                "isXenon": false,
+                "hyperV": false,
+                "targetWorkerCount": 0,
+                "targetWorkerSizeId": 0,
+                "zoneRedundant": false,
+                "asyncScalingEnabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Communication/CommunicationServices",
+            "apiVersion": "2026-03-18",
+            "name": "[parameters('CommunicationServices_acs_feedback_name')]",
+            "location": "global",
+            "dependsOn": [
+                "[resourceId('Microsoft.Communication/emailServices/domains', parameters('emailServices_ecs_feedback_name'), 'AzureManagedDomain')]"
+            ],
+            "properties": {
+                "dataLocation": "brazil",
+                "linkedDomains": [
+                    "[resourceId('Microsoft.Communication/emailServices/domains', parameters('emailServices_ecs_feedback_name'), 'AzureManagedDomain')]"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Communication/emailServices/domains",
+            "apiVersion": "2026-03-18",
+            "name": "[concat(parameters('emailServices_ecs_feedback_name'), '/AzureManagedDomain')]",
+            "location": "global",
+            "dependsOn": [
+                "[resourceId('Microsoft.Communication/emailServices', parameters('emailServices_ecs_feedback_name'))]"
+            ],
+            "properties": {
+                "domainManagement": "AzureManaged",
+                "userEngagementTracking": "Disabled"
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_tech_charger4_feedback_name'), '/degradationindependencyduration')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "degradationindependencyduration",
+                    "DisplayName": "Degradation in dependency duration",
+                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
+                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": false,
+                    "SupportsEmailNotifications": true
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_tech_charger4_feedback_name'), '/degradationinserverresponsetime')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "degradationinserverresponsetime",
+                    "DisplayName": "Degradation in server response time",
+                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
+                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": false,
+                    "SupportsEmailNotifications": true
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_tech_charger4_feedback_name'), '/digestMailConfiguration')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "digestMailConfiguration",
+                    "DisplayName": "Digest Mail Configuration",
+                    "Description": "This rule describes the digest mail preferences",
+                    "HelpUrl": "www.homail.com",
+                    "IsHidden": true,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": false,
+                    "SupportsEmailNotifications": true
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_tech_charger4_feedback_name'), '/extension_billingdatavolumedailyspikeextension')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "extension_billingdatavolumedailyspikeextension",
+                    "DisplayName": "Abnormal rise in daily data volume (preview)",
+                    "Description": "This detection rule automatically analyzes the billing data generated by your application, and can warn you about an unusual increase in your application's billing costs",
+                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/tree/master/SmartDetection/billing-data-volume-daily-spike.md",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_tech_charger4_feedback_name'), '/extension_canaryextension')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "extension_canaryextension",
+                    "DisplayName": "Canary extension",
+                    "Description": "Canary extension",
+                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/blob/master/SmartDetection/",
+                    "IsHidden": true,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_tech_charger4_feedback_name'), '/extension_exceptionchangeextension')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "extension_exceptionchangeextension",
+                    "DisplayName": "Abnormal rise in exception volume (preview)",
+                    "Description": "This detection rule automatically analyzes the exceptions thrown in your application, and can warn you about unusual patterns in your exception telemetry.",
+                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/blob/master/SmartDetection/abnormal-rise-in-exception-volume.md",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_tech_charger4_feedback_name'), '/extension_memoryleakextension')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "extension_memoryleakextension",
+                    "DisplayName": "Potential memory leak detected (preview)",
+                    "Description": "This detection rule automatically analyzes the memory consumption of each process in your application, and can warn you about potential memory leaks or increased memory consumption.",
+                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/tree/master/SmartDetection/memory-leak.md",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_tech_charger4_feedback_name'), '/extension_securityextensionspackage')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "extension_securityextensionspackage",
+                    "DisplayName": "Potential security issue detected (preview)",
+                    "Description": "This detection rule automatically analyzes the telemetry generated by your application and detects potential security issues.",
+                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/blob/master/SmartDetection/application-security-detection-pack.md",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_tech_charger4_feedback_name'), '/extension_traceseveritydetector')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "extension_traceseveritydetector",
+                    "DisplayName": "Degradation in trace severity ratio (preview)",
+                    "Description": "This detection rule automatically analyzes the trace logs emitted from your application, and can warn you about unusual patterns in the severity of your trace telemetry.",
+                    "HelpUrl": "https://github.com/Microsoft/ApplicationInsights-Home/blob/master/SmartDetection/degradation-in-trace-severity-ratio.md",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_tech_charger4_feedback_name'), '/longdependencyduration')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "longdependencyduration",
+                    "DisplayName": "Long dependency duration",
+                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
+                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": false,
+                    "SupportsEmailNotifications": true
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_tech_charger4_feedback_name'), '/migrationToAlertRulesCompleted')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "migrationToAlertRulesCompleted",
+                    "DisplayName": "Migration To Alert Rules Completed",
+                    "Description": "A configuration that controls the migration state of Smart Detection to Smart Alerts",
+                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
+                    "IsHidden": true,
+                    "IsEnabledByDefault": false,
+                    "IsInPreview": true,
+                    "SupportsEmailNotifications": false
+                },
+                "enabled": false,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_tech_charger4_feedback_name'), '/slowpageloadtime')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "slowpageloadtime",
+                    "DisplayName": "Slow page load time",
+                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
+                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": false,
+                    "SupportsEmailNotifications": true
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "microsoft.insights/components/ProactiveDetectionConfigs",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[concat(parameters('components_tech_charger4_feedback_name'), '/slowserverresponsetime')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components', parameters('components_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "ruleDefinitions": {
+                    "Name": "slowserverresponsetime",
+                    "DisplayName": "Slow server response time",
+                    "Description": "Smart Detection rules notify you of performance anomaly issues.",
+                    "HelpUrl": "https://docs.microsoft.com/en-us/azure/application-insights/app-insights-proactive-performance-diagnostics",
+                    "IsHidden": false,
+                    "IsEnabledByDefault": true,
+                    "IsInPreview": false,
+                    "SupportsEmailNotifications": true
+                },
+                "enabled": true,
+                "sendEmailsToSubscriptionOwners": true,
+                "customEmails": []
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2026-03-01-preview",
+            "name": "[concat(parameters('vaults_kvTechCharger4Feedback26_name'), '/acs-connection-string')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kvTechCharger4Feedback26_name'))]"
+            ],
+            "properties": {
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2026-03-01-preview",
+            "name": "[concat(parameters('vaults_kvTechCharger4Feedback26_name'), '/acs-sender-email')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kvTechCharger4Feedback26_name'))]"
+            ],
+            "properties": {
+                "contentType": "Email de sender Azure",
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2026-03-01-preview",
+            "name": "[concat(parameters('vaults_kvTechCharger4Feedback26_name'), '/admin-emails')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kvTechCharger4Feedback26_name'))]"
+            ],
+            "properties": {
+                "contentType": "Email de Urgência/Relatório",
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2026-03-01-preview",
+            "name": "[concat(parameters('vaults_kvTechCharger4Feedback26_name'), '/db-password')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kvTechCharger4Feedback26_name'))]"
+            ],
+            "properties": {
+                "contentType": "Senha do banco de dados",
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2026-03-01-preview",
+            "name": "[concat(parameters('vaults_kvTechCharger4Feedback26_name'), '/db-url')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kvTechCharger4Feedback26_name'))]"
+            ],
+            "properties": {
+                "contentType": "Url de banco de dados",
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2026-03-01-preview",
+            "name": "[concat(parameters('vaults_kvTechCharger4Feedback26_name'), '/db-username')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kvTechCharger4Feedback26_name'))]"
+            ],
+            "properties": {
+                "contentType": "Usuário de banco de dados",
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advancedThreatProtectionSettings",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/CreateIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/DbParameterization')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/DefragmentIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/DropIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/ForceLastGoodPlan')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/auditingPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/Default')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "auditingState": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/auditingSettings",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "auditActionsAndGroups": [],
+                "isStorageSecondaryKeyInUse": false,
+                "isAzureMonitorTargetEnabled": false,
+                "isManagedIdentityInUse": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/connectionPolicies",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/default')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "connectionType": "Default"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/tech-charger4-feedback')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "sku": {
+                "name": "GP_S_Gen5_2",
+                "tier": "GeneralPurpose",
+                "family": "Gen5",
+                "capacity": 2
+            },
+            "kind": "v12.0,user,vcore,serverless,freelimit",
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "maxSizeBytes": 34359738368,
+                "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
+                "zoneRedundant": false,
+                "readScale": "Disabled",
+                "autoPauseDelay": 60,
+                "requestedBackupStorageRedundancy": "Local",
+                "minCapacity": 0.5,
+                "maintenanceConfigurationId": "/subscriptions/855e3dd2-d3ec-488a-88dc-ed5242aac38e/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default",
+                "isLedgerOn": false,
+                "useFreeLimit": true,
+                "freeLimitExhaustionBehavior": "AutoPause",
+                "availabilityZone": "NoPreference"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advancedThreatProtectionSettings",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/master/Default')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "auditingState": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingSettings",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/extendedAuditingSettings",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/geoBackupPolicies",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/ledgerDigestUploads",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/master/Current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/securityAlertPolicies",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/master/Current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/vulnerabilityAssessments",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/devOpsAuditingSettings",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "isAzureMonitorTargetEnabled": false,
+                "isManagedIdentityInUse": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/encryptionProtector",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "kind": "servicemanaged",
+            "properties": {
+                "serverKeyName": "ServiceManaged",
+                "serverKeyType": "ServiceManaged",
+                "autoRotationEnabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/extendedAuditingSettings",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "auditActionsAndGroups": [],
+                "isStorageSecondaryKeyInUse": false,
+                "isAzureMonitorTargetEnabled": false,
+                "isManagedIdentityInUse": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/firewallRules",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/AllowAllWindowsAzureIps')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "startIpAddress": "0.0.0.0",
+                "endIpAddress": "0.0.0.0"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/firewallRules",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/QueryEditorClientIPAddress_1780101072516')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "startIpAddress": "168.0.55.70",
+                "endIpAddress": "168.0.55.70"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/keys",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/ServiceManaged')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "kind": "servicemanaged",
+            "properties": {
+                "serverKeyType": "ServiceManaged"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/securityAlertPolicies",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/sqlVulnerabilityAssessments",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/vulnerabilityAssessments",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
+                },
+                "storageContainerPath": "[parameters('vulnerabilityAssessments_Default_storageContainerPath')]"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2026-04-01",
+            "name": "[concat(parameters('storageAccounts_sttechchargerfeedback_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_sttechchargerfeedback_name'))]"
+            ],
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "staticWebsite": {
+                    "enabled": false
+                },
+                "containerDeleteRetentionPolicy": {
+                    "enabled": true,
+                    "days": 7
+                },
+                "cors": {
+                    "corsRules": []
+                },
+                "deleteRetentionPolicy": {
+                    "allowPermanentDelete": false,
+                    "enabled": true,
+                    "days": 7
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/fileServices",
+            "apiVersion": "2026-04-01",
+            "name": "[concat(parameters('storageAccounts_sttechchargerfeedback_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_sttechchargerfeedback_name'))]"
+            ],
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "protocolSettings": {
+                    "smb": {
+                        "encryptionInTransit": {
+                            "required": true
+                        }
+                    }
+                },
+                "cors": {
+                    "corsRules": []
+                },
+                "shareDeleteRetentionPolicy": {
+                    "enabled": true,
+                    "days": 7
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/queueServices",
+            "apiVersion": "2026-04-01",
+            "name": "[concat(parameters('storageAccounts_sttechchargerfeedback_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_sttechchargerfeedback_name'))]"
+            ],
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/tableServices",
+            "apiVersion": "2026-04-01",
+            "name": "[concat(parameters('storageAccounts_sttechchargerfeedback_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_sttechchargerfeedback_name'))]"
+            ],
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2024-11-01",
+            "name": "[parameters('sites_tech_charger4_feedback_name')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_ASP_techcharger4_a918_name'))]"
+            ],
+            "tags": {
+                "hidden-link: /app-insights-resource-id": "/subscriptions/855e3dd2-d3ec-488a-88dc-ed5242aac38e/resourceGroups/tech-charger4/providers/microsoft.insights/components/tech-charger4-feedback"
+            },
+            "kind": "functionapp",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "enabled": true,
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '-hhh0duffd8e5eqf7.scm.westus2-01.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "hostType": "Repository"
+                    },
+                    {
+                        "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '-hhh0duffd8e5eqf7.westus2-01.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "hostType": "Standard"
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_ASP_techcharger4_a918_name'))]",
+                "reserved": false,
+                "isXenon": false,
+                "hyperV": false,
+                "dnsConfiguration": {},
+                "outboundVnetRouting": {
+                    "allTraffic": false,
+                    "applicationTraffic": false,
+                    "contentShareTraffic": false,
+                    "imagePullTraffic": false,
+                    "backupRestoreTraffic": false
+                },
+                "siteConfig": {
+                    "numberOfWorkers": 1,
+                    "acrUseManagedIdentityCreds": false,
+                    "alwaysOn": false,
+                    "http20Enabled": false,
+                    "functionAppScaleLimit": 200,
+                    "minimumElasticInstanceCount": 0
+                },
+                "scmSiteAlsoStopped": false,
+                "clientAffinityEnabled": false,
+                "clientAffinityProxyEnabled": false,
+                "clientCertEnabled": false,
+                "clientCertMode": "Required",
+                "hostNamesDisabled": false,
+                "ipMode": "IPv4",
+                "customDomainVerificationId": "612E02AC26F4B737E892ECCA4F4CD35F7EF44F471A3D210A8181FDB43E352340",
+                "containerSize": 1536,
+                "dailyMemoryTimeQuota": 0,
+                "httpsOnly": true,
+                "endToEndEncryptionEnabled": false,
+                "redundancyMode": "None",
+                "publicNetworkAccess": "Enabled",
+                "storageAccountRequired": false,
+                "keyVaultReferenceIdentity": "SystemAssigned",
+                "autoGeneratedDomainNameLabelScope": "TenantReuse"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '/ftp')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_tech_charger4_feedback_name'))]"
+            ],
+            "tags": {
+                "hidden-link: /app-insights-resource-id": "/subscriptions/855e3dd2-d3ec-488a-88dc-ed5242aac38e/resourceGroups/tech-charger4/providers/microsoft.insights/components/tech-charger4-feedback"
+            },
+            "properties": {
+                "allow": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '/scm')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_tech_charger4_feedback_name'))]"
+            ],
+            "tags": {
+                "hidden-link: /app-insights-resource-id": "/subscriptions/855e3dd2-d3ec-488a-88dc-ed5242aac38e/resourceGroups/tech-charger4/providers/microsoft.insights/components/tech-charger4-feedback"
+            },
+            "properties": {
+                "allow": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '/web')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_tech_charger4_feedback_name'))]"
+            ],
+            "tags": {
+                "hidden-link: /app-insights-resource-id": "/subscriptions/855e3dd2-d3ec-488a-88dc-ed5242aac38e/resourceGroups/tech-charger4/providers/microsoft.insights/components/tech-charger4-feedback"
+            },
+            "properties": {
+                "numberOfWorkers": 1,
+                "defaultDocuments": [
+                    "Default.htm",
+                    "Default.html",
+                    "Default.asp",
+                    "index.htm",
+                    "index.html",
+                    "iisstart.htm",
+                    "default.aspx",
+                    "index.php"
+                ],
+                "netFrameworkVersion": "v6.0",
+                "requestTracingEnabled": false,
+                "remoteDebuggingEnabled": false,
+                "httpLoggingEnabled": false,
+                "acrUseManagedIdentityCreds": false,
+                "logsDirectorySizeLimit": 35,
+                "detailedErrorLoggingEnabled": false,
+                "publishingUsername": "$tech-charger4-feedback",
+                "scmType": "None",
+                "use32BitWorkerProcess": true,
+                "webSocketsEnabled": false,
+                "alwaysOn": false,
+                "javaVersion": "17",
+                "managedPipelineMode": "Integrated",
+                "virtualApplications": [
+                    {
+                        "virtualPath": "/",
+                        "physicalPath": "site\\wwwroot",
+                        "preloadEnabled": false
+                    }
+                ],
+                "loadBalancing": "LeastRequests",
+                "experiments": {
+                    "rampUpRules": []
+                },
+                "autoHealEnabled": false,
+                "vnetRouteAllEnabled": false,
+                "vnetPrivatePortsCount": 0,
+                "publicNetworkAccess": "Enabled",
+                "cors": {
+                    "allowedOrigins": [
+                        "https://portal.azure.com"
+                    ],
+                    "supportCredentials": false
+                },
+                "localMySqlEnabled": false,
+                "managedServiceIdentityId": 58015,
+                "ipSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 2147483647,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 2147483647,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictionsUseMain": false,
+                "http20Enabled": false,
+                "minTlsVersion": "1.2",
+                "scmMinTlsVersion": "1.2",
+                "ftpsState": "FtpsOnly",
+                "preWarmedInstanceCount": 0,
+                "functionAppScaleLimit": 200,
+                "functionsRuntimeScaleMonitoringEnabled": false,
+                "websiteTimeZone": "E. South America Standard Time",
+                "minimumElasticInstanceCount": 0,
+                "azureStorageAccounts": {},
+                "http20ProxyFlag": 0
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '/01efcb24c3e1481299e83e2dac2095c6')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY_FUNCTIONS_V1",
+                "message": "{\"type\":\"deployment\",\"sha\":\"9a2ede61ae56c779b1d32efebee52405a0a6c8b1\",\"repoName\":\"IgorAlmeeida/feedback-functions\",\"actor\":\"IgorAlmeeida\",\"slotName\":\"production\"}",
+                "start_time": "2026-05-30T01:02:19.8963582Z",
+                "end_time": "2026-05-30T01:02:21.1933031Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '/03bea2bb4df3493fa57b9706582be241')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY_FUNCTIONS_V1",
+                "message": "{\"type\":\"deployment\",\"sha\":\"60ceb3cc943d4755e8dfebe3bbe0ea1bb62af653\",\"repoName\":\"IgorAlmeeida/feedback-functions\",\"actor\":\"IgorAlmeeida\",\"slotName\":\"production\"}",
+                "start_time": "2026-06-01T01:09:29.9017933Z",
+                "end_time": "2026-06-01T01:09:31.1361466Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '/171bec11e6284aa894ab3b33e9c7b639')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY_FUNCTIONS_V1",
+                "message": "{\"type\":\"deployment\",\"sha\":\"15bf3b44b9c6383c4636d45b234a0f72a3bae2c4\",\"repoName\":\"IgorAlmeeida/feedback-functions\",\"actor\":\"IgorAlmeeida\",\"slotName\":\"production\"}",
+                "start_time": "2026-05-30T01:29:43.2986242Z",
+                "end_time": "2026-05-30T01:29:44.5955959Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '/6721773d1c664489989dc2516defaaa5')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY_FUNCTIONS_V1",
+                "message": "{\"type\":\"deployment\",\"sha\":\"8720aa991cd2b43ab0549225e4e5d7f883f50b44\",\"repoName\":\"IgorAlmeeida/feedback-functions\",\"actor\":\"IgorAlmeeida\",\"slotName\":\"production\"}",
+                "start_time": "2026-06-01T02:07:41.1529078Z",
+                "end_time": "2026-06-01T02:07:42.2935427Z",
+                "active": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '/6772f8640ea5410cb8a9c480b6545116')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY_FUNCTIONS_V1",
+                "message": "{\"type\":\"deployment\",\"sha\":\"04737cfbc0054cd3c4ac9be6f8f5f597f0c72156\",\"repoName\":\"IgorAlmeeida/feedback-functions\",\"actor\":\"IgorAlmeeida\",\"slotName\":\"production\"}",
+                "start_time": "2026-05-29T23:53:57.8397061Z",
+                "end_time": "2026-05-29T23:53:59.0584825Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '/852e48bbaebe4e79836a7beca9c01e6a')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY_FUNCTIONS_V1",
+                "message": "{\"type\":\"deployment\",\"sha\":\"eb6c93465bc1e70fe64e0cdce43cddfbd8b54e21\",\"repoName\":\"IgorAlmeeida/feedback-functions\",\"actor\":\"IgorAlmeeida\",\"slotName\":\"production\"}",
+                "start_time": "2026-05-30T01:18:57.3501707Z",
+                "end_time": "2026-05-30T01:18:58.5688621Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '/c19f2c99252f4a02b09787b206a2a1cc')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY_FUNCTIONS_V1",
+                "message": "{\"type\":\"deployment\",\"sha\":\"9457cf9e78cb13ee963972a1be959c52da021c10\",\"repoName\":\"IgorAlmeeida/feedback-functions\",\"actor\":\"IgorAlmeeida\",\"slotName\":\"production\"}",
+                "start_time": "2026-05-30T00:46:22.3487162Z",
+                "end_time": "2026-05-30T00:46:23.6301715Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '/da4d9aa235aa40b5a35750d5842066a9')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY_FUNCTIONS_V1",
+                "message": "{\"type\":\"deployment\",\"sha\":\"26191b71d7e6378b74a315d8d2a3a13ff6144f8a\",\"repoName\":\"IgorAlmeeida/feedback-functions\",\"actor\":\"IgorAlmeeida\",\"slotName\":\"production\"}",
+                "start_time": "2026-06-01T00:58:08.6823886Z",
+                "end_time": "2026-06-01T00:58:09.9172215Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '/ddb8106e3f3b4ba99c250b2a63b78271')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY_FUNCTIONS_V1",
+                "message": "{\"type\":\"deployment\",\"sha\":\"d7c697c8504891230f1dda8220316e75a6cf724f\",\"repoName\":\"IgorAlmeeida/feedback-functions\",\"actor\":\"IgorAlmeeida\",\"slotName\":\"production\"}",
+                "start_time": "2026-05-30T01:46:09.1902117Z",
+                "end_time": "2026-05-30T01:46:10.4871469Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '/fa11c8cb437946c19c63ac4bfdb24282')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "GITHUB_ZIP_DEPLOY_FUNCTIONS_V1",
+                "message": "{\"type\":\"deployment\",\"sha\":\"f14e3beedb9554392e82ddc7433be6bde3379b38\",\"repoName\":\"IgorAlmeeida/feedback-functions\",\"actor\":\"IgorAlmeeida\",\"slotName\":\"production\"}",
+                "start_time": "2026-05-30T02:12:39.4126811Z",
+                "end_time": "2026-05-30T02:12:40.678308Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/functions",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '/NotifyUrgent')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "script_root_path_href": "https://tech-charger4-feedback-hhh0duffd8e5eqf7.westus2-01.azurewebsites.net/admin/vfs/site/wwwroot/NotifyUrgent/",
+                "script_href": "https://tech-charger4-feedback-hhh0duffd8e5eqf7.westus2-01.azurewebsites.net/admin/vfs/site/wwwroot/feedback-functions-1.0-SNAPSHOT-runner.jar",
+                "config_href": "https://tech-charger4-feedback-hhh0duffd8e5eqf7.westus2-01.azurewebsites.net/admin/vfs/site/wwwroot/NotifyUrgent/function.json",
+                "test_data_href": "https://tech-charger4-feedback-hhh0duffd8e5eqf7.westus2-01.azurewebsites.net/admin/vfs/data/Functions/sampledata/NotifyUrgent.dat",
+                "href": "https://tech-charger4-feedback-hhh0duffd8e5eqf7.westus2-01.azurewebsites.net/admin/functions/NotifyUrgent",
+                "config": {
+                    "scriptFile": "../feedback-functions-1.0-SNAPSHOT-runner.jar",
+                    "entryPoint": "br.com.fiap.feedback.functions.NotifyUrgentFunction.run",
+                    "bindings": [
+                        {
+                            "type": "queueTrigger",
+                            "direction": "in",
+                            "name": "message",
+                            "queueName": "feedback-urgente",
+                            "connection": "AzureWebJobsStorage"
+                        }
+                    ]
+                },
+                "language": "java",
+                "isDisabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/functions",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '/ReceiveFeedback')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "script_root_path_href": "https://tech-charger4-feedback-hhh0duffd8e5eqf7.westus2-01.azurewebsites.net/admin/vfs/site/wwwroot/ReceiveFeedback/",
+                "script_href": "https://tech-charger4-feedback-hhh0duffd8e5eqf7.westus2-01.azurewebsites.net/admin/vfs/site/wwwroot/feedback-functions-1.0-SNAPSHOT-runner.jar",
+                "config_href": "https://tech-charger4-feedback-hhh0duffd8e5eqf7.westus2-01.azurewebsites.net/admin/vfs/site/wwwroot/ReceiveFeedback/function.json",
+                "test_data_href": "https://tech-charger4-feedback-hhh0duffd8e5eqf7.westus2-01.azurewebsites.net/admin/vfs/data/Functions/sampledata/ReceiveFeedback.dat",
+                "href": "https://tech-charger4-feedback-hhh0duffd8e5eqf7.westus2-01.azurewebsites.net/admin/functions/ReceiveFeedback",
+                "config": {
+                    "scriptFile": "../feedback-functions-1.0-SNAPSHOT-runner.jar",
+                    "entryPoint": "br.com.fiap.feedback.functions.ReceiveFeedbackFunction.run",
+                    "bindings": [
+                        {
+                            "type": "httpTrigger",
+                            "direction": "in",
+                            "name": "req",
+                            "route": "avaliacao",
+                            "methods": [
+                                "POST"
+                            ],
+                            "authLevel": "ANONYMOUS"
+                        },
+                        {
+                            "type": "http",
+                            "direction": "out",
+                            "name": "$return"
+                        }
+                    ]
+                },
+                "invoke_url_template": "https://tech-charger4-feedback-hhh0duffd8e5eqf7.westus2-01.azurewebsites.net/api/avaliacao",
+                "language": "java",
+                "isDisabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/functions",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '/WeeklyReport')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "script_root_path_href": "https://tech-charger4-feedback-hhh0duffd8e5eqf7.westus2-01.azurewebsites.net/admin/vfs/site/wwwroot/WeeklyReport/",
+                "script_href": "https://tech-charger4-feedback-hhh0duffd8e5eqf7.westus2-01.azurewebsites.net/admin/vfs/site/wwwroot/feedback-functions-1.0-SNAPSHOT-runner.jar",
+                "config_href": "https://tech-charger4-feedback-hhh0duffd8e5eqf7.westus2-01.azurewebsites.net/admin/vfs/site/wwwroot/WeeklyReport/function.json",
+                "test_data_href": "https://tech-charger4-feedback-hhh0duffd8e5eqf7.westus2-01.azurewebsites.net/admin/vfs/data/Functions/sampledata/WeeklyReport.dat",
+                "href": "https://tech-charger4-feedback-hhh0duffd8e5eqf7.westus2-01.azurewebsites.net/admin/functions/WeeklyReport",
+                "config": {
+                    "scriptFile": "../feedback-functions-1.0-SNAPSHOT-runner.jar",
+                    "entryPoint": "br.com.fiap.feedback.functions.WeeklyReportFunction.run",
+                    "bindings": [
+                        {
+                            "type": "timerTrigger",
+                            "direction": "in",
+                            "name": "timer",
+                            "schedule": "%WEEKLY_REPORT_SCHEDULE%"
+                        }
+                    ]
+                },
+                "language": "java",
+                "isDisabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "apiVersion": "2024-11-01",
+            "name": "[concat(parameters('sites_tech_charger4_feedback_name'), '/', parameters('sites_tech_charger4_feedback_name'), '-hhh0duffd8e5eqf7.westus2-01.azurewebsites.net')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_tech_charger4_feedback_name'))]"
+            ],
+            "properties": {
+                "siteName": "tech-charger4-feedback",
+                "hostNameType": "Verified"
+            }
+        },
+        {
+            "type": "microsoft.communication/emailservices/domains/senderusernames",
+            "apiVersion": "2026-03-18",
+            "name": "[concat(parameters('emailServices_ecs_feedback_name'), '/azuremanageddomain/donotreply')]",
+            "dependsOn": [
+                "[resourceId('microsoft.communication/emailservices/domains', parameters('emailServices_ecs_feedback_name'), 'azuremanageddomain')]",
+                "[resourceId('microsoft.communication/emailservices', parameters('emailServices_ecs_feedback_name'))]"
+            ],
+            "properties": {
+                "username": "DoNotReply",
+                "displayName": "DoNotReply"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advancedThreatProtectionSettings",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/tech-charger4-feedback/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_tech_charger_feedback_2026_name'), 'tech-charger4-feedback')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/tech-charger4-feedback/CreateIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_tech_charger_feedback_2026_name'), 'tech-charger4-feedback')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/tech-charger4-feedback/DbParameterization')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_tech_charger_feedback_2026_name'), 'tech-charger4-feedback')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/tech-charger4-feedback/DefragmentIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_tech_charger_feedback_2026_name'), 'tech-charger4-feedback')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/tech-charger4-feedback/DropIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_tech_charger_feedback_2026_name'), 'tech-charger4-feedback')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/tech-charger4-feedback/ForceLastGoodPlan')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_tech_charger_feedback_2026_name'), 'tech-charger4-feedback')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/tech-charger4-feedback/Default')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_tech_charger_feedback_2026_name'), 'tech-charger4-feedback')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "auditingState": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingSettings",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/tech-charger4-feedback/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_tech_charger_feedback_2026_name'), 'tech-charger4-feedback')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/backupLongTermRetentionPolicies",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/tech-charger4-feedback/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_tech_charger_feedback_2026_name'), 'tech-charger4-feedback')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "timeBasedImmutability": "Disabled",
+                "weeklyRetention": "PT0S",
+                "monthlyRetention": "PT0S",
+                "yearlyRetention": "PT0S",
+                "weekOfYear": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/tech-charger4-feedback/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_tech_charger_feedback_2026_name'), 'tech-charger4-feedback')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 7,
+                "diffBackupIntervalInHours": 12
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/extendedAuditingSettings",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/tech-charger4-feedback/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_tech_charger_feedback_2026_name'), 'tech-charger4-feedback')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/geoBackupPolicies",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/tech-charger4-feedback/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_tech_charger_feedback_2026_name'), 'tech-charger4-feedback')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/ledgerDigestUploads",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/tech-charger4-feedback/Current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_tech_charger_feedback_2026_name'), 'tech-charger4-feedback')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/securityAlertPolicies",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/tech-charger4-feedback/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_tech_charger_feedback_2026_name'), 'tech-charger4-feedback')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/tech-charger4-feedback/Current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_tech_charger_feedback_2026_name'), 'tech-charger4-feedback')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "state": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/vulnerabilityAssessments",
+            "apiVersion": "2025-02-01-preview",
+            "name": "[concat(parameters('servers_tech_charger_feedback_2026_name'), '/tech-charger4-feedback/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_tech_charger_feedback_2026_name'), 'tech-charger4-feedback')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_tech_charger_feedback_2026_name'))]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2026-04-01",
+            "name": "[concat(parameters('storageAccounts_sttechchargerfeedback_name'), '/default/azure-webjobs-hosts')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_sttechchargerfeedback_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_sttechchargerfeedback_name'))]"
+            ],
+            "properties": {
+                "immutableStorageWithVersioning": {
+                    "enabled": false
+                },
+                "defaultEncryptionScope": "$account-encryption-key",
+                "denyEncryptionScopeOverride": false,
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2026-04-01",
+            "name": "[concat(parameters('storageAccounts_sttechchargerfeedback_name'), '/default/azure-webjobs-secrets')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_sttechchargerfeedback_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_sttechchargerfeedback_name'))]"
+            ],
+            "properties": {
+                "immutableStorageWithVersioning": {
+                    "enabled": false
+                },
+                "defaultEncryptionScope": "$account-encryption-key",
+                "denyEncryptionScopeOverride": false,
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+            "apiVersion": "2026-04-01",
+            "name": "[concat(parameters('storageAccounts_sttechchargerfeedback_name'), '/default/tech-charger4-feedback98b6')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('storageAccounts_sttechchargerfeedback_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_sttechchargerfeedback_name'))]"
+            ],
+            "properties": {
+                "accessTier": "TransactionOptimized",
+                "shareQuota": 102400,
+                "enabledProtocols": "SMB"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/queueServices/queues",
+            "apiVersion": "2026-04-01",
+            "name": "[concat(parameters('storageAccounts_sttechchargerfeedback_name'), '/default/feedback-urgente')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/queueServices', parameters('storageAccounts_sttechchargerfeedback_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_sttechchargerfeedback_name'))]"
+            ],
+            "properties": {
+                "metadata": {}
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/queueServices/queues",
+            "apiVersion": "2026-04-01",
+            "name": "[concat(parameters('storageAccounts_sttechchargerfeedback_name'), '/default/feedback-urgente-poison')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/queueServices', parameters('storageAccounts_sttechchargerfeedback_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_sttechchargerfeedback_name'))]"
+            ],
+            "properties": {
+                "metadata": {}
+            }
+        }
+    ]
+}
